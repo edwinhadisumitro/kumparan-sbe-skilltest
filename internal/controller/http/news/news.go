@@ -5,6 +5,7 @@ import (
 	newsInterface "kumparan-sbe-skilltest/internal/interface/news"
 	newsModel "kumparan-sbe-skilltest/internal/model/news"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo"
 	"github.com/nsqio/go-nsq"
@@ -41,5 +42,31 @@ func (controller *newsController) PublishNews(c echo.Context) error {
 	}
 
 	response = helper.NewSuccessResponse("", responsePayload)
+	return c.JSON(http.StatusOK, response)
+}
+
+func (controller *newsController) GetNews(c echo.Context) error {
+	var err error
+	var news []newsModel.News
+	var page int
+	var response helper.HTTPResponse
+
+	page, err = strconv.Atoi(c.Request().Header.Get("page"))
+	if err != nil {
+		response = helper.NewErrorResponse("Failed to get page number", err.Error())
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	if page == 0 {
+		response = helper.NewErrorResponse("Failed to validate page number", "Page number must be greater than 0")
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	news, err = controller.newsLibrary.GetNews(page)
+	if err != nil {
+		response = helper.NewErrorResponse("Failed to get News data", err.Error())
+	}
+
+	response = helper.NewSuccessResponse("news", news)
 	return c.JSON(http.StatusOK, response)
 }

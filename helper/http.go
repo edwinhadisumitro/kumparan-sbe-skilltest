@@ -8,10 +8,9 @@ type HTTPResponse struct {
 	Description string      `json:"description,omitempty"`
 }
 
-var dataWrapper = make(map[string]interface{})
-
 // NewSuccessResponse : Contstructor for generating new success HTTP Response
 func NewSuccessResponse(field string, data interface{}) HTTPResponse {
+	var dataWrapper = make(map[string]interface{})
 	if field != "" {
 		dataWrapper[field] = data
 	}
@@ -26,6 +25,7 @@ func NewSuccessResponse(field string, data interface{}) HTTPResponse {
 // NewErrorResponse : Contstructor for generating new error HTTP Response
 func NewErrorResponse(message string, description string) HTTPResponse {
 	WriteToLogFile(message, description)
+	var dataWrapper = make(map[string]interface{})
 	return HTTPResponse{
 		Error:       false,
 		Data:        dataWrapper,

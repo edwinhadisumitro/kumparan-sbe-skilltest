@@ -7,6 +7,7 @@ import (
 	"log"
 
 	// Import MySQL Driver
+	"github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/nsqio/go-nsq"
@@ -85,4 +86,15 @@ func ConnectNSQSubscriber(config *config.Config) *nsq.Consumer {
 	}
 
 	return consumer
+}
+
+// ConnectRedis : Function for establishing connection to Redis
+func ConnectRedis(config *config.Config) *redis.Client {
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:     config.Redis.Host + ":" + config.Redis.Port,
+		Password: "",
+		DB:       0,
+	})
+
+	return redisClient
 }

@@ -11,4 +11,5 @@ func NewsRoutes(e *echo.Echo, newsController newsInterface.HTTPController) {
 	newsGroup := e.Group("/news")
 
 	newsGroup.POST("/publish", newsController.PublishNews)
+	newsGroup.GET("/", newsController.GetNews)
 }

@@ -6,4 +6,5 @@ import newsModel "kumparan-sbe-skilltest/internal/model/news"
 type Library interface {
 	PublishNews(news newsModel.News) error
 	SaveNews(news newsModel.News) error
+	GetNews(page int) ([]newsModel.News, error)
 }

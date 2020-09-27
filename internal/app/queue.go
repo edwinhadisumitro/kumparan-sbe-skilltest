@@ -17,9 +17,10 @@ func InitNSQSubscriber(config *config.Config) {
 	elasticSearchConn := ConnectElasticSearch(config)
 	nsqPublisherConn := ConnectNSQPublisher(config)
 	nsqSubscriberConn := ConnectNSQSubscriber(config)
+	redisClient := ConnectRedis(config)
 
 	// Repositories
-	newsRepository := newsRepository.NewNewsRepository(nsqPublisherConn, mysqlConn, elasticSearchConn)
+	newsRepository := newsRepository.NewNewsRepository(nsqPublisherConn, mysqlConn, elasticSearchConn, redisClient)
 
 	// Libraries
 	newsLibrary := newsLibrary.NewNewsLibrary(newsRepository)

@@ -16,6 +16,11 @@ type News struct {
 	Created string `json:"created"`
 }
 
+type NewsElasticSearch struct {
+	NewsID  int    `json:"news_id"`
+	Created string `json:"created"`
+}
+
 func (news *NewsSQL) ConvertToJSON() News {
 	data := News{}
 

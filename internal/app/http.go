@@ -15,9 +15,10 @@ func InitHTTPServer(config *config.Config, e *echo.Echo) {
 	mysqlConn := ConnectMySQL(config)
 	elasticSearchConn := ConnectElasticSearch(config)
 	nsqPublisherConn := ConnectNSQPublisher(config)
+	redisClient := ConnectRedis(config)
 
 	// Repositories
-	newsRepository := newsRepository.NewNewsRepository(nsqPublisherConn, mysqlConn, elasticSearchConn)
+	newsRepository := newsRepository.NewNewsRepository(nsqPublisherConn, mysqlConn, elasticSearchConn, redisClient)
 
 	// Libraries
 	newsLibrary := newsLibrary.NewNewsLibrary(newsRepository)
