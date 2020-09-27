@@ -1,0 +1,23 @@
+AppPort: "8080"
+MySQL:
+  Host: "localhost"
+  Port: "3306"
+  Username: "root"
+  Password: "root"
+  Database: "kumparandb"
+ElasticSearch:
+  Host: "localhost"
+  Port: "9200"
+  Index: ""
+NSQPublisher:
+  Host: "localhost"
+  Port: "4150"
+  Topic: "publishedNews"
+NSQSubscriber:
+  Host: "localhost"
+  Port: "4161"
+  Topic: "publishedNews"
+  Channel: "publishedNewsChannel"
+Redis:
+  Host: "localhost"
+  Port: "6379"

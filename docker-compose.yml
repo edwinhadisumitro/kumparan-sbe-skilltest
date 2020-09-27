@@ -1,0 +1,113 @@
+version: '3'
+
+services: 
+    mysql:
+        image: mysql:5.7
+        container_name: mysql
+        volumes:
+            - ./data/mysql:/var/lib/mysql:rw
+        restart: always
+        ports:
+            - "3306:3306"
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - TZ=Asia/Jakarta
+        networks: 
+            - kumparan-bridge
+    redis:
+        image: "redis"
+        container_name: "redis"
+        ports:
+            - "6379:6379"
+        networks: 
+            - kumparan-bridge
+    elasticsearch:
+        image: "elasticsearch:7.9.1"
+        container_name: "elasticsearch"
+        volumes: 
+            - "./data/elasticsearch:/usr/share/elasticsearch/data:rw"
+        environment: 
+            - "discovery.type=single-node"
+        ports:
+            - "9200:9200"
+        networks: 
+            - kumparan-bridge
+    kibana:
+        image: "kibana:7.9.1"
+        container_name: "kibana"
+        depends_on: 
+            - elasticsearch
+        ports: 
+            - "5601:5601"
+        networks: 
+            - kumparan-bridge
+    nsqlookup:
+        image: nsqio/nsq
+        container_name: nsqlookup
+        command: /nsqlookupd
+        ports:
+            - "4160:4160"
+            - "4161:4161"
+        networks:
+            - kumparan-bridge
+    nsq:
+        image: nsqio/nsq
+        container_name: nsq
+        command: /nsqd --lookupd-tcp-address=nsqlookup:4160
+        depends_on:
+            - nsqlookup
+        ports:
+            - "4150:4150"
+            - "4151:4151"
+        networks:
+            - kumparan-bridge
+    nsqadmin:
+        image: nsqio/nsq
+        container_name: nsqadmin
+        command: /nsqadmin --lookupd-http-address=nsqlookup:4161
+        depends_on:
+            - nsqlookup
+        ports:
+            - "4171:4171"
+        networks:
+            - kumparan-bridge
+    kumparan-news-listener:
+        image: ubuntu:latest
+        container_name: kumparan-news-listener
+        command: "./cmd/queue/queue"
+        depends_on: 
+            - nsq
+            - nsqadmin
+            - nsqlookup
+            - mysql
+            - elasticsearch
+            - kumparan-news-api
+        volumes: 
+            - "./cmd:/cmd:rw"
+            - "./config:/config:rw"
+            - ".env:/.env:rw"
+            - "./logs/:/logs:rw"
+        networks: 
+            - kumparan-bridge
+    kumparan-news-api:
+        image: ubuntu:latest
+        container_name: kumparan-news-api
+        command: "./cmd/http/http"
+        depends_on: 
+            - elasticsearch
+            - nsq
+            - nsqadmin
+            - nsqlookup
+            - redis
+            - mysql
+        volumes: 
+            - "./cmd:/cmd:rw"
+            - "./config:/config:rw"
+            - ".env:/.env:rw"
+            - "./logs/:/logs:rw"
+        ports:
+            - "8080:8080"
+        networks: 
+            - kumparan-bridge
+networks: 
+    kumparan-bridge:
