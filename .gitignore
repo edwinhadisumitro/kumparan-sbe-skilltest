@@ -2,3 +2,5 @@
 data/mysql/*
 data/elasticsearch/*
 logs/*
+cmd/queue/queue
+cmd/http/http

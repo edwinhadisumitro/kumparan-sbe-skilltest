@@ -8,8 +8,6 @@ import (
 
 // NewsRoutes : Routes for news API
 func NewsRoutes(e *echo.Echo, newsController newsInterface.HTTPController) {
-	newsGroup := e.Group("/news")
-
-	newsGroup.POST("/publish", newsController.PublishNews)
-	newsGroup.GET("/", newsController.GetNews)
+	e.POST("/news", newsController.PublishNews)
+	e.GET("/news", newsController.GetNews)
 }
