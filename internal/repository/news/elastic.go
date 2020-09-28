@@ -9,8 +9,6 @@ import (
 	"sort"
 	"strconv"
 	"time"
-
-	"github.com/go-redis/redis"
 )
 
 func (repo *newsRepository) SaveNewsID(news newsModel.NewsElasticSearch) error {
@@ -53,15 +51,14 @@ func (repo *newsRepository) GetNews(page int) ([]newsModel.News, error) {
 
 			var news newsModel.News
 			news, err = repo.GetNewsFromCache(newsElastic)
-			if err == redis.Nil {
+			if err != nil {
+				helper.WriteToLogFile("Failed to get news detail from cache", err.Error())
 				news, err = repo.GetNewsDetail(newsElastic)
 				if err == nil {
 					repo.SaveNewsToCache(news)
 				} else if err != nil {
 					helper.WriteToLogFile("Failed to get news detail from MySQL", err.Error())
 				}
-			} else if err != nil {
-				helper.WriteToLogFile("Failed to get news detail from cache", err.Error())
 			}
 
 			channel <- news
